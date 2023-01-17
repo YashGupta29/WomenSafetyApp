@@ -92,20 +92,23 @@ class _HomePageBodyState extends State<HomePageBody>
 
     print('List of recipients - > $recipients');
     print('List of images - > $imgPaths');
-    String imgS = '';
 
-    for (String img in imgPaths) {
-      imgS += "$img\n";
-    }
-
-    print('Images String -> $imgS');
+    print('Images -> $imgPaths');
 
     if (currentLocation != null) {
       await SmsService.sendSms(
         context,
         recipients,
-        'Location: ${currentLocation.googleUrl}. \nCamera Pictures:$imgS',
+        'Hey,\n I am in a need of help. \nHere is my Location: ${currentLocation.googleUrl}.',
       );
+
+      for (String img in imgPaths) {
+        await SmsService.sendSms(
+          context,
+          recipients,
+          'Camera Picture: $img',
+        );
+      }
     }
   }
 
