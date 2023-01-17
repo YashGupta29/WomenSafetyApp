@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_contact_picker/flutter_native_contact_picker.dart';
@@ -93,12 +92,19 @@ class _HomePageBodyState extends State<HomePageBody>
 
     print('List of recipients - > $recipients');
     print('List of images - > $imgPaths');
+    String imgS = '';
+
+    for (String img in imgPaths) {
+      imgS += "$img\n";
+    }
+
+    print('Images String -> $imgS');
 
     if (currentLocation != null) {
       await SmsService.sendSms(
         context,
         recipients,
-        'Hello,\nI am in a need of help. Here is my current location.\n${currentLocation.googleUrl}.\nCamera Pictures: ${imgPaths}',
+        'Location: ${currentLocation.googleUrl}. \nCamera Pictures:$imgS',
       );
     }
   }
