@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_contact_picker/flutter_native_contact_picker.dart';
+import 'package:http_status_code/http_status_code.dart';
+import 'package:women_safety_app/common/constants/route.constants.dart';
 import 'package:women_safety_app/common/services/api.service.dart';
 import 'package:women_safety_app/home/services/contacts.service.dart';
+import 'package:go_router/go_router.dart';
 import 'contacts.list.dart';
 
 class ContactI {
@@ -59,6 +62,12 @@ class _ContactsPageBodyState extends State<ContactsPageBody> {
         contact.fullName!,
         contact.phoneNumbers![0],
       );
+      if (res.statusCode == StatusCode.UNAUTHORIZED) {
+        print('Unauthorized');
+        context.pushReplacementNamed(
+          MyAppRouterConstants().login.routeName,
+        );
+      }
       print(
           'Contact Added -> ${res.data?["id"]} ${res.data?["name"]} ${res.data?["number"]}');
       ContactI contactAdded = ContactI(
@@ -66,9 +75,11 @@ class _ContactsPageBodyState extends State<ContactsPageBody> {
           name: res.data?["name"],
           number: res.data?["number"]);
       contacts.add(contactAdded);
-      setState(() {
-        contacts = contacts;
-      });
+      if (mounted) {
+        setState(() {
+          contacts = contacts;
+        });
+      }
     } else {
       print('Contact selected is null');
     }
@@ -77,11 +88,19 @@ class _ContactsPageBodyState extends State<ContactsPageBody> {
   Future<void> deleteContact(String contactId) async {
     print('Deleting contact -> $contactId');
     final ApiResponse res = await contactsService.deleteContact(contactId);
+    if (res.statusCode == StatusCode.UNAUTHORIZED) {
+      print('Unauthorized');
+      context.pushReplacementNamed(
+        MyAppRouterConstants().login.routeName,
+      );
+    }
     print('Contact Deleted Successfully -> ${res.isSuccess}');
     contacts.removeWhere((element) => element.id == contactId);
-    setState(() {
-      contacts = contacts;
-    });
+    if (mounted) {
+      setState(() {
+        contacts = contacts;
+      });
+    }
   }
 
   Future<void> _getContacts() async {
@@ -89,6 +108,12 @@ class _ContactsPageBodyState extends State<ContactsPageBody> {
       contacts = [];
     });
     final ApiResponse res = await contactsService.getContacts();
+    if (res.statusCode == StatusCode.UNAUTHORIZED) {
+      print('Unauthorized');
+      context.pushReplacementNamed(
+        MyAppRouterConstants().login.routeName,
+      );
+    }
     print('Contacts -> ${res.data?["results"]}');
     List<dynamic> contactsList = res.data?["results"];
     for (dynamic c in contactsList) {
@@ -99,15 +124,17 @@ class _ContactsPageBodyState extends State<ContactsPageBody> {
           number: contactJson["number"]);
       contacts.add(contactI);
     }
-    setState(() {
-      contacts = contacts;
-    });
+    if (mounted) {
+      setState(() {
+        contacts = contacts;
+      });
+    }
   }
 
   @override
   void initState() {
-    _getContacts();
     super.initState();
+    _getContacts();
   }
 
   @override

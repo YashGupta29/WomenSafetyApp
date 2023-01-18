@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:women_safety_app/common/services/permission.service.dart';
 import 'package:women_safety_app/home/components/contacts.body.dart';
 import 'package:women_safety_app/home/components/home.body.dart';
@@ -16,14 +17,20 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedPage = 0;
 
-  Future<void> getLocalData() async {
+  Future<void> getLocalData(BuildContext context) async {
     StreamingSharedPreferences sf = await StreamingSharedPreferences.instance;
-    final isLoggedIn = sf.getBool("isLoggedIn", defaultValue: false);
-    final authToken = sf.getString("authToken", defaultValue: "");
-    final user = sf.getString("user", defaultValue: "");
-    print('User Logged in -> ${isLoggedIn.getValue()}');
-    print('User Auth Token -> ${authToken.getValue()}');
-    print('User Data -> ${user.getValue()}');
+    final isLoggedIn = sf.getBool("isLoggedIn", defaultValue: false).getValue();
+    final authToken = sf.getString("authToken", defaultValue: "").getValue();
+    final user = sf.getString("user", defaultValue: "").getValue();
+    print('User Logged in -> $isLoggedIn');
+    print('User Auth Token -> $authToken');
+    print('User Data -> $user');
+
+    final bool isTokenExpired = JwtDecoder.isExpired(authToken);
+    print('Is token expired -> $isTokenExpired');
+    if (isTokenExpired) {
+      deleteAuthData(context);
+    }
   }
 
   Future<void> deleteAuthData(BuildContext context) async {
@@ -37,7 +44,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     ApiService apiService = ApiService();
-    getLocalData();
+    getLocalData(context);
     PermissionService.getRequiredPermissions();
     return Scaffold(
       appBar: AppBar(

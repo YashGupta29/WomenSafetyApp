@@ -20,6 +20,7 @@ class MyAppRouter {
             )),
       ],
       redirect: (context, state) {
+        print('Is Logged In -> ${isLoggedIn.getValue()}');
         if (!isLoggedIn.getValue() &&
             allProtectedRoutesPaths.contains(state.location)) {
           print('Trying to access protected route -> ${state.location}');

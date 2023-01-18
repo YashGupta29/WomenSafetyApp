@@ -5,11 +5,13 @@ import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'package:women_safety_app/common/constants/env.constants.dart';
 
 class ApiResponse {
-  bool isSuccess;
-  String? error;
-  Map<dynamic, dynamic>? data;
+  final int statusCode;
+  final bool isSuccess;
+  final String? error;
+  final Map<dynamic, dynamic>? data;
 
   ApiResponse({
+    required this.statusCode,
     required this.isSuccess,
     this.error,
     this.data,
@@ -33,9 +35,11 @@ class ApiService {
     final response = await client.get(url, headers: _headers);
 
     print('GET API Call RESPONSE BODY-> ${response.body}');
+    print('GET API Call RESPONSE STATUS CODE-> ${response.statusCode}');
 
     if (response.statusCode == StatusCode.OK) {
       return ApiResponse(
+        statusCode: response.statusCode,
         isSuccess: true,
         data: jsonDecode(response.body),
         error: null,
@@ -43,6 +47,7 @@ class ApiService {
     }
 
     return ApiResponse(
+      statusCode: response.statusCode,
       isSuccess: false,
       data: null,
       error: jsonDecode(response.body)?["message"],
@@ -63,10 +68,12 @@ class ApiService {
     final response = await client.post(url, body: body, headers: _headers);
 
     print('POST API Call RESPONSE BODY -> ${response.body}');
+    print('POST API Call RESPONSE STATUS CODE-> ${response.statusCode}');
 
     if (response.statusCode == StatusCode.OK ||
         response.statusCode == StatusCode.CREATED) {
       return ApiResponse(
+        statusCode: response.statusCode,
         isSuccess: true,
         data: jsonDecode(response.body),
         error: null,
@@ -74,6 +81,7 @@ class ApiService {
     }
 
     return ApiResponse(
+      statusCode: response.statusCode,
       isSuccess: false,
       data: null,
       error: jsonDecode(response.body)?["message"],
@@ -94,6 +102,7 @@ class ApiService {
 
     if (response.statusCode == StatusCode.NO_CONTENT) {
       return ApiResponse(
+        statusCode: response.statusCode,
         isSuccess: true,
         data: null,
         error: null,
@@ -101,6 +110,7 @@ class ApiService {
     }
 
     return ApiResponse(
+      statusCode: response.statusCode,
       isSuccess: false,
       data: null,
       error: null,
