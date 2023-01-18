@@ -7,6 +7,7 @@ import 'package:women_safety_app/common/services/api.service.dart';
 import 'package:women_safety_app/home/services/contacts.service.dart';
 import 'package:go_router/go_router.dart';
 import 'contacts.list.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 class ContactI {
   final String id;
@@ -58,10 +59,12 @@ class _ContactsPageBodyState extends State<ContactsPageBody> {
         print('Already present contact.');
         return;
       }
+      context.loaderOverlay.show();
       final ApiResponse res = await contactsService.addContact(
         contact.fullName!,
         contact.phoneNumbers![0],
       );
+      context.loaderOverlay.hide();
       if (res.statusCode == StatusCode.UNAUTHORIZED) {
         print('Unauthorized');
         context.pushReplacementNamed(
@@ -87,7 +90,9 @@ class _ContactsPageBodyState extends State<ContactsPageBody> {
 
   Future<void> deleteContact(String contactId) async {
     print('Deleting contact -> $contactId');
+    context.loaderOverlay.show();
     final ApiResponse res = await contactsService.deleteContact(contactId);
+    context.loaderOverlay.hide();
     if (res.statusCode == StatusCode.UNAUTHORIZED) {
       print('Unauthorized');
       context.pushReplacementNamed(
@@ -107,7 +112,9 @@ class _ContactsPageBodyState extends State<ContactsPageBody> {
     setState(() {
       contacts = [];
     });
+    context.loaderOverlay.show();
     final ApiResponse res = await contactsService.getContacts();
+    context.loaderOverlay.hide();
     if (res.statusCode == StatusCode.UNAUTHORIZED) {
       print('Unauthorized');
       context.pushReplacementNamed(

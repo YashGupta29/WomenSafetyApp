@@ -57,6 +57,7 @@ dependencies:
   path_provider: ^2.0.11
   flutter_native_contact_picker: ^0.0.3
   jwt_decoder: ^2.0.1
+  loader_overlay: ^2.1.0
 
 dev_dependencies:
   flutter_test:

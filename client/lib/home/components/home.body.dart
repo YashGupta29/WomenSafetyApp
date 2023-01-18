@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_contact_picker/flutter_native_contact_picker.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+import 'package:shake/shake.dart';
 import 'package:women_safety_app/common/constants/colors.constants.dart';
 import 'package:women_safety_app/home/components/contacts.body.dart';
 import '../../common/services/api.service.dart';
@@ -26,6 +28,23 @@ class _HomePageBodyState extends State<HomePageBody>
   ContactsService contactsService = ContactsService();
   @override
   void initState() {
+    ShakeDetector detector = ShakeDetector.autoStart(
+      onPhoneShake: () async {
+        context.loaderOverlay.show();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Shake!'),
+          ),
+        );
+        // Do stuff on phone shake
+        await _notifyContacts();
+        context.loaderOverlay.hide();
+      },
+      minimumShakeCount: 1,
+      shakeSlopTimeMS: 500,
+      shakeCountResetTime: 3000,
+      shakeThresholdGravity: 2.7,
+    );
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(
@@ -53,7 +72,8 @@ class _HomePageBodyState extends State<HomePageBody>
     _controller.reverse();
   }
 
-  void _notifyContacts(BuildContext context) async {
+  Future<void> _notifyContacts() async {
+    context.loaderOverlay.show();
     CurrentLocation? currentLocation =
         await LocationService.getCurrentLocation(context);
 
@@ -110,6 +130,7 @@ class _HomePageBodyState extends State<HomePageBody>
         );
       }
     }
+    context.loaderOverlay.hide();
   }
 
   Future<List<ContactI>> _getContacts() async {
@@ -190,9 +211,9 @@ class _HomePageBodyState extends State<HomePageBody>
                     child: GestureDetector(
                       onTapUp: _tapUp,
                       onTapDown: _tapDown,
-                      onTap: () {
+                      onTap: () async {
                         print('SOS Button Pressed');
-                        _notifyContacts(context);
+                        await _notifyContacts();
                       },
                       child: Transform.scale(
                         scale: _scale,
