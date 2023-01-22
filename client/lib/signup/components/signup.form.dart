@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'package:women_safety_app/common/services/api.service.dart';
 import 'package:women_safety_app/signup/services/signup.service.dart';
@@ -55,11 +56,13 @@ class _SignupPageFormState extends State<SignupPageForm> {
               print("Validated");
               print('Email -> ${email.text}');
               print('Password -> ${password.text}');
+              context.loaderOverlay.show();
               final ApiResponse res =
                   await signupService.signupWithEmailAndPassword(
                 email.text,
                 password.text,
               );
+              context.loaderOverlay.hide();
               print('User Signup Completed Response -> ${res.data}');
               if (res.isSuccess) {
                 StreamingSharedPreferences sf =

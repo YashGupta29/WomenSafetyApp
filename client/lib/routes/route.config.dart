@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'package:women_safety_app/common/constants/route.constants.dart';
 
@@ -15,8 +16,11 @@ class MyAppRouter {
         ...allRoutes.map((MyAppRouterRoute myAppRouterRoute) => GoRoute(
               name: myAppRouterRoute.routeName,
               path: myAppRouterRoute.routePath,
-              pageBuilder: ((context, state) =>
-                  MaterialPage(child: myAppRouterRoute.routePage)),
+              pageBuilder: ((context, state) => MaterialPage(
+                    child: LoaderOverlay(
+                      child: myAppRouterRoute.routePage,
+                    ),
+                  )),
             )),
       ],
       redirect: (context, state) {

@@ -74,61 +74,69 @@ class _HomePageBodyState extends State<HomePageBody>
 
   Future<void> _notifyContacts() async {
     context.loaderOverlay.show();
-    CurrentLocation? currentLocation =
-        await LocationService.getCurrentLocation(context);
+    try {
+      CurrentLocation? currentLocation =
+          await LocationService.getCurrentLocation(context);
 
-    // await CallService.triggerIncomingCall(
-    //   name: "Test user",
-    //   avatar: "Test Avatar",
-    //   handle: "Handle",
-    //   handleType: HandleType.number,
-    //   hasVideo: false,
-    // );
+      // await CallService.triggerIncomingCall(
+      //   name: "Test user",
+      //   avatar: "Test Avatar",
+      //   handle: "Handle",
+      //   handleType: HandleType.number,
+      //   hasVideo: false,
+      // );
 
-    List<ContactI> contacts = await _getContacts();
-    List<String> recipients = [];
-    for (ContactI contactI in contacts) {
-      String number = contactI.number.split(" ").join("");
-      print('Number length -> ${number.length}');
-      if (number.length > 10) number = number.substring(number.length - 10);
-      print(
-          'Number of Contact after removing unwanted spaces and numbers -> $number');
-      recipients.add(number);
-    }
-
-    List<String> imgPaths = [];
-    List<XFile>? images = await ImageService.clickPictures(context);
-    if (images != null) {
-      for (XFile img in images) {
-        print('Image path -> ${img.path}');
-        String url = await ImageService.uploadImage(img.path);
-        print('Images uploaded url -> $url');
-        imgPaths.add(url);
+      List<ContactI> contacts = await _getContacts();
+      List<String> recipients = [];
+      for (ContactI contactI in contacts) {
+        String number = contactI.number.split(" ").join("");
+        print('Number length -> ${number.length}');
+        if (number.length > 10) number = number.substring(number.length - 10);
+        print(
+            'Number of Contact after removing unwanted spaces and numbers -> $number');
+        recipients.add(number);
       }
-      ;
-    } else {
-      print('Not able to capture any image');
-    }
 
-    print('List of recipients - > $recipients');
-    print('List of images - > $imgPaths');
+      List<String> imgPaths = [];
+      List<XFile>? images = await ImageService.clickPictures(context);
+      if (images != null) {
+        for (XFile img in images) {
+          print('Image path -> ${img.path}');
+          String url = await ImageService.uploadImage(img.path);
+          print('Images uploaded url -> $url');
+          imgPaths.add(url);
+        }
+        ;
+      } else {
+        print('Not able to capture any image');
+      }
 
-    print('Images -> $imgPaths');
+      print('List of recipients - > $recipients');
+      print('List of images - > $imgPaths');
 
-    if (currentLocation != null) {
-      await SmsService.sendSms(
-        context,
-        recipients,
-        'Hey,\n I am in a need of help. \nHere is my Location: ${currentLocation.googleUrl}.',
-      );
+      print('Images -> $imgPaths');
 
-      for (String img in imgPaths) {
+      if (currentLocation != null) {
         await SmsService.sendSms(
           context,
           recipients,
-          'Camera Picture: $img',
+          'Hey,\n I am in a need of help. \nHere is my Location: ${currentLocation.googleUrl}.',
         );
+
+        for (String img in imgPaths) {
+          await SmsService.sendSms(
+            context,
+            recipients,
+            'Camera Picture: $img',
+          );
+        }
       }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
     }
     context.loaderOverlay.hide();
   }

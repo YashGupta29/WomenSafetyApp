@@ -61,11 +61,8 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.white,
         elevation: 1,
       ),
-      body: LoaderOverlay(
-        child: _selectedPage == 0
-            ? const HomePageBody()
-            : const ContactsPageBody(),
-      ),
+      body:
+          _selectedPage == 0 ? const HomePageBody() : const ContactsPageBody(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         backgroundColor: _selectedPage == 0 ? Colors.red : Colors.black,

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
@@ -56,11 +57,13 @@ class _LoginPageFormState extends State<LoginPageForm> {
               print("Validated");
               print('Email -> ${email.text}');
               print('Password -> ${password.text}');
+              context.loaderOverlay.show();
               final ApiResponse res =
                   await loginService.loginWithEmailAndPassword(
                 email.text,
                 password.text,
               );
+              context.loaderOverlay.hide();
               print('User Login Completed Response -> ${res.data}');
               if (res.isSuccess) {
                 StreamingSharedPreferences sf =
