@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_contact_picker/flutter_native_contact_picker.dart';
+
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:shake/shake.dart';
 import 'package:women_safety_app/common/constants/colors.constants.dart';
@@ -21,7 +21,6 @@ class HomePageBody extends StatefulWidget {
 
 class _HomePageBodyState extends State<HomePageBody>
     with SingleTickerProviderStateMixin {
-  final FlutterContactPicker _contactPicker = FlutterContactPicker();
   late double _scale;
   late AnimationController _controller;
   List<ContactI> contacts = [];
@@ -29,16 +28,9 @@ class _HomePageBodyState extends State<HomePageBody>
   @override
   void initState() {
     ShakeDetector detector = ShakeDetector.autoStart(
-      onPhoneShake: () async {
-        context.loaderOverlay.show();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Shake!'),
-          ),
-        );
-        // Do stuff on phone shake
-        await _notifyContacts();
-        context.loaderOverlay.hide();
+      onPhoneShake: (ShakeEvent shakeEvent) {
+        // Handle phone shake - call async method without await
+        _handleShakeAsync();
       },
       minimumShakeCount: 1,
       shakeSlopTimeMS: 500,
@@ -62,6 +54,18 @@ class _HomePageBodyState extends State<HomePageBody>
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  void _handleShakeAsync() async {
+    context.loaderOverlay.show();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Shake!'),
+      ),
+    );
+    // Do stuff on phone shake
+    await _notifyContacts();
+    context.loaderOverlay.hide();
   }
 
   void _tapDown(TapDownDetails details) {

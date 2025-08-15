@@ -9,7 +9,7 @@ import 'permission.service.dart';
 class ImageService {
   static Future<String> uploadImage(String filePath) async {
     print('Image Upload URL -> $imageUploadUrl');
-    final req = await http.MultipartRequest('POST', Uri.parse(imageUploadUrl));
+    final req = http.MultipartRequest('POST', Uri.parse(imageUploadUrl));
     final http.MultipartFile multipartFile =
         await http.MultipartFile.fromPath('image', filePath);
     req.files.add(multipartFile);

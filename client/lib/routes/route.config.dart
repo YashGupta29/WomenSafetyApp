@@ -26,12 +26,12 @@ class MyAppRouter {
       redirect: (context, state) {
         print('Is Logged In -> ${isLoggedIn.getValue()}');
         if (!isLoggedIn.getValue() &&
-            allProtectedRoutesPaths.contains(state.location)) {
-          print('Trying to access protected route -> ${state.location}');
+            allProtectedRoutesPaths.contains(state.fullPath)) {
+          print('Trying to access protected route -> ${state.fullPath}');
           return _myAppRouterConstants.login.routePath;
         } else if (isLoggedIn.getValue() &&
-            allAuthRoutesPaths.contains(state.location)) {
-          print('Trying to access auth route -> ${state.location}');
+            allAuthRoutesPaths.contains(state.fullPath)) {
+          print('Trying to access auth route -> ${state.fullPath}');
           return _myAppRouterConstants.home.routePath;
         }
         return null;

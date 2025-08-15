@@ -15,14 +15,13 @@ class _SafeHomeState extends State<SafeHome> {
   void initState() {
     super.initState();
     ShakeDetector detector = ShakeDetector.autoStart(
-      onPhoneShake: () async {
+      onPhoneShake: (ShakeEvent shakeEvent) {
         print('Phone is shaking');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Shake!'),
           ),
         );
-
         // Do stuff on phone shake
         _sendMessage(context);
       },

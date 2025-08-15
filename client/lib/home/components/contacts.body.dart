@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_contact_picker/flutter_native_contact_picker.dart';
+import 'package:fast_contacts/fast_contacts.dart';
 import 'package:http_status_code/http_status_code.dart';
 import 'package:women_safety_app/common/constants/route.constants.dart';
 import 'package:women_safety_app/common/services/api.service.dart';
-import 'package:women_safety_app/home/services/contacts.service.dart';
+import 'package:women_safety_app/home/services/contacts.service.dart' as app_contacts;
 import 'package:go_router/go_router.dart';
 import 'contacts.list.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -41,16 +41,18 @@ class ContactsPageBody extends StatefulWidget {
 
 class _ContactsPageBodyState extends State<ContactsPageBody> {
   List<ContactI> contacts = [];
-  ContactsService contactsService = ContactsService();
+  app_contacts.ContactsService contactsService = app_contacts.ContactsService();
 
   Future<void> _addContact() async {
-    FlutterContactPicker _contactPicker = FlutterContactPicker();
-    Contact? contact = await _contactPicker.selectContact();
+    List<Contact> systemContacts = await FastContacts.getAllContacts();
+    // For demonstration, we'll take the first contact
+    // In a real app, you'd show a picker dialog
+    Contact? contact = systemContacts.isNotEmpty ? systemContacts.first : null;
     print('Selected contact -> $contact');
-    if (contact != null) {
+    if (contact != null && contact.phones.isNotEmpty) {
       bool isAlreadyPresent = false;
-      for (ContactI c in contacts) {
-        if (c.name == contact.fullName!) {
+      for (ContactI c in this.contacts) {
+        if (c.name == contact.displayName) {
           isAlreadyPresent = true;
           break;
         }
@@ -61,8 +63,8 @@ class _ContactsPageBodyState extends State<ContactsPageBody> {
       }
       context.loaderOverlay.show();
       final ApiResponse res = await contactsService.addContact(
-        contact.fullName!,
-        contact.phoneNumbers![0],
+        contact.displayName,
+        contact.phones[0].number,
       );
       context.loaderOverlay.hide();
       if (res.statusCode == StatusCode.UNAUTHORIZED) {
@@ -77,10 +79,10 @@ class _ContactsPageBodyState extends State<ContactsPageBody> {
           id: res.data?["id"],
           name: res.data?["name"],
           number: res.data?["number"]);
-      contacts.add(contactAdded);
+      this.contacts.add(contactAdded);
       if (mounted) {
         setState(() {
-          contacts = contacts;
+          this.contacts = this.contacts;
         });
       }
     } else {

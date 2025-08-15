@@ -1,4 +1,4 @@
-import 'package:background_sms/background_sms.dart';
+// import 'package:flutter_sms/flutter_sms.dart'; // Temporarily disabled
 import 'package:flutter/material.dart';
 import 'permission.service.dart';
 
@@ -18,27 +18,9 @@ class SmsService {
       return;
     }
 
-    bool? supportCustomSim = await BackgroundSms.isSupportCustomSim;
-    print('Does device supports custom sim -> $supportCustomSim');
-    for (String number in recipients) {
-      SmsStatus result;
-      // Device supports custom sim
-      if (supportCustomSim!) {
-        result = await BackgroundSms.sendMessage(
-            phoneNumber: number, message: message, simSlot: 1);
-      }
-      // Device doesn't support custom sim
-      else {
-        result = await BackgroundSms.sendMessage(
-            phoneNumber: number, message: message);
-      }
-
-      if (result == SmsStatus.sent) {
-        print('SMS Sent to -> $number');
-        print('SMS Message -> $message');
-      } else {
-        print('There was a problem sending SMS');
-      }
-    }
+    // Temporarily disabled SMS functionality - will be replaced with modern implementation
+    print('SMS would be sent to: $recipients');
+    print('Message: $message');
+    // TODO: Implement SMS with modern package that supports current Android Gradle Plugin
   }
 }

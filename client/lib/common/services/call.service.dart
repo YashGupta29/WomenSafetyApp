@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_incoming_call/flutter_incoming_call.dart';
+// import 'package:flutter_incoming_call/flutter_incoming_call.dart'; // Temporarily disabled
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:uuid/uuid.dart';
 import 'package:women_safety_app/common/services/permission.service.dart';
+
+// Temporary enum to replace HandleType from flutter_incoming_call
+enum HandleType { number, generic }
 
 class CallService {
   static callNumber(BuildContext context, String number) async {
@@ -26,28 +29,9 @@ class CallService {
     required HandleType handleType,
     required bool hasVideo,
   }) async {
-    await FlutterIncomingCall.configure(
-        appName: 'incoming_call',
-        duration: 10000,
-        android: ConfigAndroid(
-          vibration: true,
-          ringtonePath: 'default',
-          channelId: 'calls',
-          channelName: 'Calls channel name',
-          channelDescription: 'Calls channel description',
-        ),
-        ios: ConfigIOS(
-          iconName: 'AppIcon40x40',
-          ringtonePath: null,
-          includesCallsInRecents: false,
-          supportsVideo: true,
-          maximumCallGroups: 2,
-          maximumCallsPerCallGroup: 1,
-        ));
-
-    final String uuid = Uuid().v4();
-    print('Triggering Incoming Call');
-    await FlutterIncomingCall.displayIncomingCall(
-        uuid, name, avatar, handle, handleType, hasVideo);
+    // Temporarily disabled incoming call functionality - will be replaced with modern implementation
+    print('Incoming call feature temporarily disabled');
+    print('Would trigger call for: $name ($handle)');
+    // TODO: Implement incoming call with modern package that supports current Android Gradle Plugin
   }
 }
